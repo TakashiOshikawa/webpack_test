@@ -10,3 +10,6 @@ php -S localhost:8889
 ## URL
 
 localhost:8889/socketapp/index.html
+
+## WebSocket server repository
+TakashiOshikawa/java-websocket-scala
