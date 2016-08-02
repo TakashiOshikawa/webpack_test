@@ -13,3 +13,12 @@ Timeline.prototype.get = function () {
 
   return timeline;
 };
+
+Timeline.prototype.messageReceive = function (message) {
+  var message = new Message(message);
+
+  var timeline = new Timeline();
+  var timelineElement = timeline.get();
+
+  timelineElement.appendChild(message.create());
+};

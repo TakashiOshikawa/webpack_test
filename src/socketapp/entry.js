@@ -8,3 +8,6 @@ timeline.init();
 
 var sendbox = new Sendbox();
 sendbox.initBox();
+
+var ws = new WS();
+ws.init();

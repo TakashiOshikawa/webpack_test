@@ -62,6 +62,49 @@
 	var sendbox = new Sendbox();
 	sendbox.initBox();
 
+	var ws = new WS();
+	ws.init();
+
+
+
+
+	// var uri = "ws://localhost:9000";
+	//
+	// // WebSocketオブジェクト
+	// var webSocket = null;
+	//
+	// webSocket = new WebSocket(uri);
+	// // イベントハンドラの設定
+	// webSocket.onopen = onOpen;
+	// webSocket.onmessage = onMessage;
+	// webSocket.onclose = onClose;
+	// webSocket.onerror = onError;
+	//
+	//
+	// // 接続イベント
+	// function onOpen(event) {
+	//     console.log('oooopen');
+	// }
+	//
+	// // メッセージ受信イベント
+	// function onMessage(event) {
+	//     if (event && event.data) {
+	//         console.log('messsssage');
+	//     }
+	// }
+	//
+	// // エラーイベント
+	// function onError(event) {
+	//     console.log('errrrororrororo');
+	// }
+	//
+	// // 切断イベント
+	// function onClose(event) {
+	//     console.log('clooooooose');
+	//     webSocket = null;
+	//     setTimeout("open()", 3000);
+	// }
+
 
 /***/ },
 /* 2 */
@@ -100,6 +143,15 @@
 	  return timeline;
 	};
 
+	Timeline.prototype.messageReceive = function (message) {
+	  var message = new Message(message);
+
+	  var timeline = new Timeline();
+	  var timelineElement = timeline.get();
+
+	  timelineElement.appendChild(message.create());
+	};
+
 
 /***/ },
 /* 4 */
@@ -110,12 +162,14 @@
 	Sendbox.prototype.send = function () {
 	  var msg = document.getElementById('send-text');
 	  var message = new Message(msg.value);
-	  msg.value = '';
 
 	  var timeline = new Timeline();
 	  var timelineElement = timeline.get();
 
-	  timelineElement.appendChild(message.create());
+	  var conn = new WS();
+	  conn.connection.send(msg.value);
+
+	  msg.value = '';
 	};
 
 	Sendbox.prototype.initBox = function () {
@@ -138,26 +192,42 @@
 /***/ function(module, exports) {
 
 	module.exports = WS = function () {
-	  this.connection = nil;
+
+	  // シングルトン
+	  if (typeof WS.instance === "object"){
+	    return WS.instance;
+	  }
+
+	  this.connection = null;
+
+	  // キャッシュする
+	  WS.instance = this;
+	  return this;
 	};
 
 	WS.prototype.init = function (routing) {
-	  this.connection = new WebSocket('ws://ttt.cooooooooo');
+	  this.connection = new WebSocket('ws://localhost:9000');
 
 	  // コネクション確立時の処理
 	  this.connection.onopen = function () {
-	    console.log('ping');
-	    connection.send('ping');
+	    console.log('open');
 	  };
 
 	  // コネクションエラー時の処理
 	  this.connection.onerror = function () {
-	    console.log('errrrrrrrrrrrrrrroorr');
+	    console.log('error');
 	  };
 
-	  this.connection.onMessage = function (event) {
-	    console.log(event.data);
+	  this.connection.onmessage = function (event) {
+	    var timeline = new Timeline();
+	    timeline.messageReceive(event.data)
 	  };
+
+	  this.connection.onclose = function (event) {
+	    console.log('close');
+	    this.connection = null;
+	  };
+
 	};
 
 

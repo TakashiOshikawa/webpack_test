@@ -3,12 +3,14 @@ module.exports = Sendbox = function () {};
 Sendbox.prototype.send = function () {
   var msg = document.getElementById('send-text');
   var message = new Message(msg.value);
-  msg.value = '';
 
   var timeline = new Timeline();
   var timelineElement = timeline.get();
 
-  timelineElement.appendChild(message.create());
+  var conn = new WS();
+  conn.connection.send(msg.value);
+
+  msg.value = '';
 };
 
 Sendbox.prototype.initBox = function () {
